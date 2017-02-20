@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./../../templates/html/report.css" />
+    <title>Scenario documentation</title>
+</head>
+<body>
+<div>
+    <h1>Bootstrap a development network with 4 peers (2 orgs)  and 1 orderer (1 org), each having a single independent root of trust (No fabric-ca, just openssl) -- @1.1 Orderer Options</h1>
+    <hr/>
+    <ul id="navigation">
+        <li><a href="#Step 1">Step 1: Given the orderer network has organizations</a></li>
+        <li><a href="#Step 2">Step 2: And user requests role of orderer admin by creating a key and csr for orderer and ac</a></li>
+        <li><a href="#Step 3">Step 3: And the peer network has organizations</a></li>
+        <li><a href="#Step 4">Step 4: And a ordererBootstrapAdmin is identified and given access to all public certificate</a></li>
+        <li><a href="#Step 5">Step 5: And the ordererBootstrapAdmin generates a GUUID to identify the orderer system chain</a></li>
+        <li><a href="#Step 6">Step 6: And the ordererBootstrapAdmin creates a chain creators policy &#34;chainCreatePolicy1&#34; (</a></li>
+        <li><a href="#Step 7">Step 7: And the ordererBoostrapAdmin creates the chain creation policy names &#34;chainCreationP</a></li>
+        <li><a href="#Step 8">Step 8: And the ordererBoostrapAdmin creates MSP configuration &#34;mspConfig1&#34; for orderer syst</a></li>
+        <li><a href="#Step 9">Step 9: And the ordererBootstrapAdmin creates the genesis block &#34;ordererGenesisBlock&#34; for ch</a></li>
+        <li><a href="#Step 10">Step 10: And the orderer admins inspect and approve the genesis block for chain &#34;OrdererSyste</a></li>
+        <li><a href="#Step 11">Step 11: And the orderer admins use the genesis block for chain &#34;OrdererSystemChainId&#34; to con</a></li>
+        <li><a href="#Step 12">Step 12: And user requests role for peer by creating a key and csr for peer and acquires sign</a></li>
+        <li><a href="#Step 13">Step 13: And we compose &#34;docker-compose-next-4.yml&#34;</a></li>
+        <li><a href="#Step 14">Step 14: And the ordererBootstrapAdmin runs the channel template tool to create the orderer c</a></li>
+        <li><a href="#Step 15">Step 15: And the ordererBootstrapAdmin distributes orderer configuration template &#34;template1&#34;</a></li>
+        <li><a href="#Step 16">Step 16: And the following application developers are defined for peer organizations and each</a></li>
+        <li><a href="#Step 17">Step 17: And the user &#34;dev0Org0&#34; creates a peer template &#34;template1&#34; with chaincode deploymen</a></li>
+        <li><a href="#Step 18">Step 18: And the user &#34;dev0Org0&#34; creates an peer anchor set &#34;anchors1&#34; for channel &#34;com.acme.</a></li>
+        <li><a href="#Step 19">Step 19: And the user &#34;dev0Org0&#34; creates a ConfigUpdateEnvelope &#34;createChannelConfigUpdate1&#34;</a></li>
+        <li><a href="#Step 20">Step 20: And the user &#34;dev0Org0&#34; collects signatures for ConfigUpdateEnvelope &#34;createChannelC</a></li>
+        <li><a href="#Step 21">Step 21: And the user &#34;dev0Org0&#34; creates a ConfigUpdate Tx &#34;configUpdateTx1&#34; using signed Con</a></li>
+        <li><a href="#Step 22">Step 22: And the user &#34;dev0Org0&#34; broadcasts ConfigUpdate Tx &#34;configUpdateTx1&#34; to orderer &#34;ord</a></li>
+        <li><a href="#Step 23">Step 23: And I wait &#34;2&#34; seconds</a></li>
+        <li><a href="#Step 24">Step 24: When user &#34;dev0Org0&#34; connects to deliver function on orderer &#34;orderer0&#34;</a></li>
+        <li><a href="#Step 25">Step 25: And user &#34;dev0Org0&#34; sends deliver a seek request on orderer &#34;orderer0&#34; with properti</a></li>
+        <li><a href="#Step 26">Step 26: Then user &#34;dev0Org0&#34; should get a delivery &#34;genesisBlockForMyNewChannel&#34; from &#34;ordere</a></li>
+        <li><a href="#Step 27">Step 27: When user &#34;dev0Org0&#34; using cert alias &#34;dev0Org0App1&#34; requests to join channel using g</a></li>
+        <li><a href="#Step 28">Step 28: Then user &#34;dev0Org0&#34; expects result code for &#34;joinChannelResult&#34; of &#34;200&#34; from peers</a></li>
+        <li><a href="#Step 29">Step 29: When user &#34;dev0Org0&#34; creates a chaincode spec &#34;cc_spec&#34; with name &#34;example02&#34; of type</a></li>
+        <li><a href="#Step 30">Step 30: And user &#34;dev0Org0&#34; using cert alias &#34;dev0Org0App1&#34; creates a deployment proposal &#34;p</a></li>
+        <li><a href="#Step 31">Step 31: And user &#34;dev0Org0&#34; sends proposal &#34;proposal1&#34; to endorsers with timeout of &#34;30&#34; sec</a></li>
+        <li><a href="#Step 32">Step 32: Then user &#34;dev0Org0&#34; expects proposal responses &#34;deploymentProposalResponses&#34; with st</a></li>
+        <li><a href="#Step 33">Step 33: And user &#34;dev0Org0&#34; expects proposal responses &#34;deploymentProposalResponses&#34; each ha</a></li>
+        <li><a href="#Step 34">Step 34: When user &#34;dev0Org0&#34; creates a transaction &#34;deploymentTransaction1&#34; from proposal res</a></li>
+        <li><a href="#Step 35">Step 35: And the user &#34;dev0Org0&#34; broadcasts transaction &#34;deploymentTransaction1&#34; on channel &#34;</a></li>
+        <li><a href="#Step 36">Step 36: And I wait &#34;2&#34; seconds</a></li>
+        <li><a href="#Step 37">Step 37: When user &#34;dev0Org0&#34; connects to deliver function on orderer &#34;orderer0&#34;</a></li>
+        <li><a href="#Step 38">Step 38: And user &#34;dev0Org0&#34; sends deliver a seek request on orderer &#34;orderer0&#34; with properti</a></li>
+        <li><a href="#Step 39">Step 39: Then user &#34;dev0Org0&#34; should get a delivery &#34;deploymentTransaction11Block&#34; from &#34;order</a></li>
+    </ul>
+</div>
+
+<div id="Step 1">
+    <h2>Step 1</h2>
+    <hr/>
+    <h3>Given the orderer network has organizations</h3>
+    <table>
+        <tr>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>ordererOrg0</td>
+        </tr>
+    </table>
+</div><div id="ordererOrg0">
+    <h4>Created new organization ordererOrg0 with <a href="./dir-org-ordererorg0-cert.pem">public cert</a></h4>
+    <code>-----BEGIN CERTIFICATE-----
+MIIBcjCCARigAwIBAwICA+gwCgYIKoZIzj0EAwIwFjEUMBIGA1UEAwwLb3JkZXJl
+ck9yZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjAWMRQwEgYDVQQD
+DAtvcmRlcmVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABNiHaL82ZAnZ
+BGcQhr0dJ1vja6mnKitP8Nyk47w/qupmtkt+t/u/Z+yOAN4+rOZStooK2D7vIMEo
+FMOUYij9upijVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFPs4royA
+dAdiGzVRGciJv0XyyRHuMB8GA1UdIwQYMBaAFPs4royAdAdiGzVRGciJv0XyyRHu
+MAoGCCqGSM49BAMCA0gAMEUCIDV5X7K38dXRCYKMdo4hbCdGowk+7JMf8JgiuRAl
+HY6VAiEA+e2FqxsHaVJ1C2S176SGBbKHrCDPqClz8ZzhwBq/jVY=
+-----END CERTIFICATE-----
+</code>
+</div><div id="Step 2">
+    <h2>Step 2</h2>
+    <hr/>
+    <h3>And user requests role of orderer admin by creating a key and csr for orderer and acquires signed certificate from organization</h3>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Orderer</th>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>orderer0Signer</td>
+            <td>orderer0</td>
+            <td>ordererOrg0</td>
+        </tr>
+    </table>
+</div><div id="orderer0Signer">
+    <h4>Created new user orderer0Signer with <a href="./dir-user-orderer0signer-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIDxpAH7B57lbXoo7/2P68ebD9mOHaTEFR4LE1xwqLxRZoAoGCCqGSM49
+AwEHoUQDQgAEF0EWYOT7dRkfGBznJusR1WqiRkRGPEe1K7vRWFXx4VDYyGz9YtC2
+J7mBLc68m6MOATMfMlncUF8Xyj7kIFurfA==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div>
+    <h4>Created new named node admin tuple: NodeAdminTuple(user=u&#39;orderer0Signer&#39;, nodeName=u&#39;orderer0&#39;, organization=u&#39;ordererOrg0&#39;)</h4>
+</div><div class="scrollBox">
+    <code>
+-----BEGIN CERTIFICATE-----
+MIIBaDCCAQ+gAwIBAwICA+gwCgYIKoZIzj0EAwIwFjEUMBIGA1UEAwwLb3JkZXJl
+ck9yZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQD
+DAhvcmRlcmVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABBdBFmDk+3UZHxgc
+5ybrEdVqokZERjxHtSu70VhV8eFQ2Mhs/WLQtie5gS3OvJujDgEzHzJZ3FBfF8o+
+5CBbq3yjUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFEu1v9NmfpTKw2F13XIr
+v1IZM6DMMB8GA1UdIwQYMBaAFPs4royAdAdiGzVRGciJv0XyyRHuMAoGCCqGSM49
+BAMCA0cAMEQCIHJNleUpa4iXwuX4Ww9hX1TQNP/TZLDI2i6Ojsn7HwiMAiB7wEPl
+5C+rXCz1c7aqJix9M/tBh2M/tyBd+Q3jAjisHw==
+-----END CERTIFICATE-----
+
+    </code>
+</div><div id="Step 3">
+    <h2>Step 3</h2>
+    <hr/>
+    <h3>And the peer network has organizations</h3>
+    <table>
+        <tr>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peerOrg1</td>
+        </tr>
+        <tr>
+            <td>peerOrg2</td>
+        </tr>
+    </table>
+</div><div id="peerOrg0">
+    <h4>Created new organization peerOrg0 with <a href="./dir-org-peerorg0-cert.pem">public cert</a></h4>
+    <code>-----BEGIN CERTIFICATE-----
+MIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw
+ZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM
+rfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp
+3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q
+fTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG
+SM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg
+R2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=
+-----END CERTIFICATE-----
+</code>
+</div><div id="peerOrg1">
+    <h4>Created new organization peerOrg1 with <a href="./dir-org-peerorg1-cert.pem">public cert</a></h4>
+    <code>-----BEGIN CERTIFICATE-----
+MIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw
+ZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2
+jbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG
+fC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb
+rMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG
+SM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA
++pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=
+-----END CERTIFICATE-----
+</code>
+</div><div id="peerOrg2">
+    <h4>Created new organization peerOrg2 with <a href="./dir-org-peerorg2-cert.pem">public cert</a></h4>
+    <code>-----BEGIN CERTIFICATE-----
+MIIBbTCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzIwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw
+ZWVyT3JnMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLTGKOGj2jZsDkOLgSWg
+qi+kD/o11b3uUjmPaOW2ZAIJWQPFQId+3BzHgWYwGo8C7vdJ3XxQ/M2x0MKACxBE
+r+mjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFB3jlMuLIYlW1ECp
+5+o2gfvBE8U/MB8GA1UdIwQYMBaAFB3jlMuLIYlW1ECp5+o2gfvBE8U/MAoGCCqG
+SM49BAMCA0kAMEYCIQCQF621TjZFbP77PUiJd0GajgZavokYNr7Y+KyZnPnWpwIh
+AJuc4KjUjgLF0Pn5jt2ZElHrdiINxZtLDyenRIYL9li5
+-----END CERTIFICATE-----
+</code>
+</div><div id="Step 4">
+    <h2>Step 4</h2>
+    <hr/>
+    <h3>And a ordererBootstrapAdmin is identified and given access to all public certificates and orderer node info</h3>
+</div><div id="ordererBootstrapAdmin">
+    <h4>Created new user ordererBootstrapAdmin with <a href="./dir-user-ordererbootstrapadmin-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIHgPOARriMb6d43K5iK0RK/P4yEvG9/+hQmWkMgnndwhoAoGCCqGSM49
+AwEHoUQDQgAEbTJCn0qZLoOw/Mz+LiT0/KPBq4i7PZD0RATj8Hy80ZWqongl6ufn
+sq707RVJCWPICnyuv2XREwRNfALmc+cYaQ==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div id="Step 5">
+    <h2>Step 5</h2>
+    <hr/>
+    <h3>And the ordererBootstrapAdmin generates a GUUID to identify the orderer system chain and refer to it by name as &#34;OrdererSystemChainId&#34;</h3>
+</div><div id="ordererBootstrapAdmin-OrdererSystemChainId">
+    <h4>User ordererBootstrapAdmin setting tag key OrdererSystemChainId to value</h4>
+</div><div class="scrollBox">
+    <code>
+2bc85b61f71111e69bbe0800275fb08f
+    </code>
+</div><div id="Step 6">
+    <h2>Step 6</h2>
+    <hr/>
+    <h3>And the ordererBootstrapAdmin creates a chain creators policy &#34;chainCreatePolicy1&#34; (network name) for peer orgs who wish to form a network using orderer system chain &#34;OrdererSystemChainId&#34;</h3>
+    <table>
+        <tr>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peerOrg1</td>
+        </tr>
+        <tr>
+            <td>peerOrg2</td>
+        </tr>
+    </table>
+</div><div id="ordererBootstrapAdmin-chainCreatePolicy1">
+    <h4>User ordererBootstrapAdmin setting tag key chainCreatePolicy1 to value</h4>
+</div><div>
+    <a href="./ordererbootstrapadmin-chaincreatepolicy1-0000.protobuf" title="ordererbootstrapadmin-chaincreatepolicy1-0000.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+policies {
+  key: &#34;chainCreatePolicy1&#34;
+  value {
+    policy {
+      type: 1
+      policy: &#34;\022\002\022\000\032\365\002\010\002\032\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg00\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg00Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\200\231\375%\201^+\267\316\037\005\031BL\255\361\377?\314\226\224\322Y\325v\216\204SR\302Q\250|=\312g\355\217\245,5i&lt;\256:2\252:(P\003\340\257b\315\242\364zF~\365\351\336\212\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\037\006\003U\035#\004\0300\026\200\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\n\006\010*\206H\316=\004\003\002\003H\0000E\002!\000\354\312\237Z\200\201\346\272\226+%\200\n\333\327\367\333\227%\323$b\271Z\312\216\217\032E\335\227]\002 Gj\227\273\325;\310\351e\227\274)\020|\304\026#e@!p\363\274\0342\345\330\223\263\265\276\242\032\365\002\010\002\032\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg10\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg10Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\\M}\326\020\250\262qu\035\305\276\346\266\215\265`U\370\363\311l\376\220\323\014|\007\365w\034\315\010\t \374\313K\311\236b\345G\311$\331`\346\r\014\303R{\277\255KkyM\374\332\006|.\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\037\006\003U\035#\004\0300\026\200\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\n\006\010*\206H\316=\004\003\002\003H\0000E\002 1O\002\033\207\303\305\254\373\207b\302[\021\270&gt;\311\212P\237A\036\325\005\006\036\307!\336\\\267R\002!\000\372\230&gt;Z\&#39;XIB\214\t)\236\372\345}\&#39;r@pN\007zc\036\331o\27797\213=\262\032\366\002\010\002\032\361\0020\202\001m0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg20\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg20Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\264\306(\341\243\3326l\016C\213\201%\240\252/\244\017\3725\325\275\356R9\217h\345\266d\002\tY\003\305@\207~\334\034\307\201f0\032\217\002\356\367I\335|P\374\315\261\320\302\200\013\020D\257\351\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\035\343\224\313\213!\211V\324@\251\347\3526\201\373\301\023\305?0\037\006\003U\035#\004\0300\026\200\024\035\343\224\313\213!\211V\324@\251\347\3526\201\373\301\023\305?0\n\006\010*\206H\316=\004\003\002\003I\0000F\002!\000\220\027\255\265N6El\376\373=H\211wA\232\216\006Z\276\211\0306\276\330\370\254\231\234\371\326\247\002!\000\233\234\340\250\324\216\002\305\320\371\371\216\335\231\022Q\353v\&#34;\r\305\233K\017\&#39;\247D\206\013\366X\271&#34;
+    }
+  }
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.configtx_pb2 import ConfigGroup
+configGroup = ConfigGroup()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/ordererbootstrapadmin-chaincreatepolicy1-0000.protobuf') as f:
+    data = f.read()
+
+configGroup.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 7">
+    <h2>Step 7</h2>
+    <hr/>
+    <h3>And the ordererBoostrapAdmin creates the chain creation policy names &#34;chainCreationPolicyNames&#34; for orderer system chain &#34;OrdererSystemChainId&#34; with policies</h3>
+    <table>
+        <tr>
+            <th>PolicyName</th>
+        </tr>
+        <tr>
+            <td>chainCreatePolicy1</td>
+        </tr>
+    </table>
+</div><div id="ordererBootstrapAdmin-chainCreationPolicyNames">
+    <h4>User ordererBootstrapAdmin setting tag key chainCreationPolicyNames to value</h4>
+</div><div>
+    <a href="./ordererbootstrapadmin-chaincreationpolicynames-0000.protobuf" title="ordererbootstrapadmin-chaincreationpolicynames-0000.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+groups {
+  key: &#34;Orderer&#34;
+  value {
+    values {
+      key: &#34;ChainCreationPolicyNames&#34;
+      value {
+        value: &#34;\n\022chainCreatePolicy1&#34;
+      }
+    }
+  }
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.configtx_pb2 import ConfigGroup
+configGroup = ConfigGroup()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/ordererbootstrapadmin-chaincreationpolicynames-0000.protobuf') as f:
+    data = f.read()
+
+configGroup.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 8">
+    <h2>Step 8</h2>
+    <hr/>
+    <h3>And the ordererBoostrapAdmin creates MSP configuration &#34;mspConfig1&#34; for orderer system chain &#34;OrdererSystemChainId&#34; for every MSP referenced by the policies</h3>
+    <table>
+        <tr>
+            <th>PolicyName</th>
+        </tr>
+        <tr>
+            <td>chainCreatePolicy1</td>
+        </tr>
+    </table>
+</div><div id="ordererBootstrapAdmin-mspConfig1">
+    <h4>User ordererBootstrapAdmin setting tag key mspConfig1 to value</h4>
+</div><div>
+    <a href="./ordererbootstrapadmin-mspconfig1-0000.protobuf" title="ordererbootstrapadmin-mspconfig1-0000.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+groups {
+  key: &#34;Application&#34;
+  value {
+    groups {
+      key: &#34;peerOrg0&#34;
+      value {
+        values {
+          key: &#34;MSP&#34;
+          value {
+            value: &#34;\022\344\010\n\010peerOrg0\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n&#34;
+          }
+        }
+      }
+    }
+    groups {
+      key: &#34;peerOrg1&#34;
+      value {
+        values {
+          key: &#34;MSP&#34;
+          value {
+            value: &#34;\022\344\010\n\010peerOrg1\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n&#34;
+          }
+        }
+      }
+    }
+    groups {
+      key: &#34;peerOrg2&#34;
+      value {
+        values {
+          key: &#34;MSP&#34;
+          value {
+            value: &#34;\022\344\010\n\010peerOrg2\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbTCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzIwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLTGKOGj2jZsDkOLgSWg\nqi+kD/o11b3uUjmPaOW2ZAIJWQPFQId+3BzHgWYwGo8C7vdJ3XxQ/M2x0MKACxBE\nr+mjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFB3jlMuLIYlW1ECp\n5+o2gfvBE8U/MB8GA1UdIwQYMBaAFB3jlMuLIYlW1ECp5+o2gfvBE8U/MAoGCCqG\nSM49BAMCA0kAMEYCIQCQF621TjZFbP77PUiJd0GajgZavokYNr7Y+KyZnPnWpwIh\nAJuc4KjUjgLF0Pn5jt2ZElHrdiINxZtLDyenRIYL9li5\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbTCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzIwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLTGKOGj2jZsDkOLgSWg\nqi+kD/o11b3uUjmPaOW2ZAIJWQPFQId+3BzHgWYwGo8C7vdJ3XxQ/M2x0MKACxBE\nr+mjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFB3jlMuLIYlW1ECp\n5+o2gfvBE8U/MB8GA1UdIwQYMBaAFB3jlMuLIYlW1ECp5+o2gfvBE8U/MAoGCCqG\nSM49BAMCA0kAMEYCIQCQF621TjZFbP77PUiJd0GajgZavokYNr7Y+KyZnPnWpwIh\nAJuc4KjUjgLF0Pn5jt2ZElHrdiINxZtLDyenRIYL9li5\n-----END CERTIFICATE-----\n&#34;
+          }
+        }
+      }
+    }
+  }
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.configtx_pb2 import ConfigGroup
+configGroup = ConfigGroup()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/ordererbootstrapadmin-mspconfig1-0000.protobuf') as f:
+    data = f.read()
+
+configGroup.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 9">
+    <h2>Step 9</h2>
+    <hr/>
+    <h3>And the ordererBootstrapAdmin creates the genesis block &#34;ordererGenesisBlock&#34; for chain &#34;OrdererSystemChainId&#34; for network config policy &#34;unanimous&#34; and consensus &#34;solo&#34; using chain creators policies</h3>
+    <table>
+        <tr>
+            <th>ConfigGroup Names</th>
+        </tr>
+        <tr>
+            <td>chainCreatePolicy1</td>
+        </tr>
+        <tr>
+            <td>chainCreationPolicyNames</td>
+        </tr>
+        <tr>
+            <td>mspConfig1</td>
+        </tr>
+    </table>
+</div><div id="ordererBootstrapAdmin-ordererGenesisBlock">
+    <h4>User ordererBootstrapAdmin setting tag key ordererGenesisBlock to value</h4>
+</div><div>
+    <a href="./ordererbootstrapadmin-orderergenesisblock.protobuf" title="ordererbootstrapadmin-orderergenesisblock.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+header {
+  data_hash: &#34;X\023\013\236R5.Y\353\311\330M\303\334\306\025\036\364\316\267\357g\213\212\350\3325\370\375\212\006\214&#34;
+}
+data {
+  data: &#34;\n\325\&#39;\nL\n.\010\001\020\001\032\006\010\233\236\251\305\005\&#34; 2bc85b61f71111e69bbe0800275fb08f\022\032\022\030\215\023\236\340\000.\333\026\365`\021O/\255d\367t\264*\251\325\006\274\230\022\204\&#39;\n\201\&#39;\n$\010\001\&#34; 2bc85b61f71111e69bbe0800275fb08f\022\330&amp;\022\237\033\n\013Application\022\217\033\022\202\t\n\010peerOrg2\022\365\010\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg2\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbTCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzIwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLTGKOGj2jZsDkOLgSWg\nqi+kD/o11b3uUjmPaOW2ZAIJWQPFQId+3BzHgWYwGo8C7vdJ3XxQ/M2x0MKACxBE\nr+mjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFB3jlMuLIYlW1ECp\n5+o2gfvBE8U/MB8GA1UdIwQYMBaAFB3jlMuLIYlW1ECp5+o2gfvBE8U/MAoGCCqG\nSM49BAMCA0kAMEYCIQCQF621TjZFbP77PUiJd0GajgZavokYNr7Y+KyZnPnWpwIh\nAJuc4KjUjgLF0Pn5jt2ZElHrdiINxZtLDyenRIYL9li5\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbTCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzIwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABLTGKOGj2jZsDkOLgSWg\nqi+kD/o11b3uUjmPaOW2ZAIJWQPFQId+3BzHgWYwGo8C7vdJ3XxQ/M2x0MKACxBE\nr+mjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFB3jlMuLIYlW1ECp\n5+o2gfvBE8U/MB8GA1UdIwQYMBaAFB3jlMuLIYlW1ECp5+o2gfvBE8U/MAoGCCqG\nSM49BAMCA0kAMEYCIQCQF621TjZFbP77PUiJd0GajgZavokYNr7Y+KyZnPnWpwIh\nAJuc4KjUjgLF0Pn5jt2ZElHrdiINxZtLDyenRIYL9li5\n-----END CERTIFICATE-----\n\022\202\t\n\010peerOrg0\022\365\010\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg0\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\022\202\t\n\010peerOrg1\022\365\010\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg1\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\022\345\001\n\007Orderer\022\331\001\0322\n\030ChainCreationPolicyNames\022\026\022\024\n\022chainCreatePolicy1\032\032\n\tBatchSize\022\r\022\013\010\n\020\200\302\327/\030\200\200 \032)\n\022IngressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\027\n\014BatchTimeout\022\007\022\005\n\00310s\032(\n\021EgressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\031\n\rConsensusType\022\010\022\006\n\004solo\032\036\n\020HashingAlgorithm\022\n\022\010\n\006SHA256\&#34;\035\n\017AcceptAllPolicy\022\n\022\010\010\001\022\004\022\002\022\000\&#34;\214\t\n\022chainCreatePolicy1\022\365\010\022\362\010\010\001\022\355\010\022\002\022\000\032\365\002\010\002\032\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg00\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg00Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\200\231\375%\201^+\267\316\037\005\031BL\255\361\377?\314\226\224\322Y\325v\216\204SR\302Q\250|=\312g\355\217\245,5i&lt;\256:2\252:(P\003\340\257b\315\242\364zF~\365\351\336\212\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\037\006\003U\035#\004\0300\026\200\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\n\006\010*\206H\316=\004\003\002\003H\0000E\002!\000\354\312\237Z\200\201\346\272\226+%\200\n\333\327\367\333\227%\323$b\271Z\312\216\217\032E\335\227]\002 Gj\227\273\325;\310\351e\227\274)\020|\304\026#e@!p\363\274\0342\345\330\223\263\265\276\242\032\365\002\010\002\032\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg10\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg10Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\\M}\326\020\250\262qu\035\305\276\346\266\215\265`U\370\363\311l\376\220\323\014|\007\365w\034\315\010\t \374\313K\311\236b\345G\311$\331`\346\r\014\303R{\277\255KkyM\374\332\006|.\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\037\006\003U\035#\004\0300\026\200\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\n\006\010*\206H\316=\004\003\002\003H\0000E\002 1O\002\033\207\303\305\254\373\207b\302[\021\270&gt;\311\212P\237A\036\325\005\006\036\307!\336\\\267R\002!\000\372\230&gt;Z\&#39;XIB\214\t)\236\372\345}\&#39;r@pN\007zc\036\331o\27797\213=\262\032\366\002\010\002\032\361\0020\202\001m0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg20\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg20Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\264\306(\341\243\3326l\016C\213\201%\240\252/\244\017\3725\325\275\356R9\217h\345\266d\002\tY\003\305@\207~\334\034\307\201f0\032\217\002\356\367I\335|P\374\315\261\320\302\200\013\020D\257\351\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\035\343\224\313\213!\211V\324@\251\347\3526\201\373\301\023\305?0\037\006\003U\035#\004\0300\026\200\024\035\343\224\313\213!\211V\324@\251\347\3526\201\373\301\023\305?0\n\006\010*\206H\316=\004\003\002\003I\0000F\002!\000\220\027\255\265N6El\376\373=H\211wA\232\216\006Z\276\211\0306\276\330\370\254\231\234\371\326\247\002!\000\233\234\340\250\324\216\002\305\320\371\371\216\335\231\022Q\353v\&#34;\r\305\233K\017\&#39;\247D\206\013\366X\271&#34;
+}
+metadata {
+  metadata: &#34;&#34;
+  metadata: &#34;&#34;
+  metadata: &#34;&#34;
+  metadata: &#34;&#34;
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.common_pb2 import Block
+block = Block()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/ordererbootstrapadmin-orderergenesisblock.protobuf') as f:
+    data = f.read()
+
+block.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 10">
+    <h2>Step 10</h2>
+    <hr/>
+    <h3>And the orderer admins inspect and approve the genesis block for chain &#34;OrdererSystemChainId&#34;</h3>
+</div><div id="Step 11">
+    <h2>Step 11</h2>
+    <hr/>
+    <h3>And the orderer admins use the genesis block for chain &#34;OrdererSystemChainId&#34; to configure orderers</h3>
+</div><div id="Step 12">
+    <h2>Step 12</h2>
+    <hr/>
+    <h3>And user requests role for peer by creating a key and csr for peer and acquires signed certificate from organization</h3>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Peer</th>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>peer0Signer</td>
+            <td>peer0</td>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peer1Signer</td>
+            <td>peer1</td>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peer2Signer</td>
+            <td>peer2</td>
+            <td>peerOrg1</td>
+        </tr>
+        <tr>
+            <td>peer3Signer</td>
+            <td>peer3</td>
+            <td>peerOrg1</td>
+        </tr>
+    </table>
+</div><div id="peer0Signer">
+    <h4>Created new user peer0Signer with <a href="./dir-user-peer0signer-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEICfoVokv4KnzQbpW59K95Var3z5s5GJ2uViqVzratUZyoAoGCCqGSM49
+AwEHoUQDQgAEhhh/UN3OMDDIzHlGdWK5zoUolRsSySAOJBHLcqrLa6SEnYvpHtH3
+5zvXBV0w9FqcxiV54UfJylJc+U0vVNe6Cg==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div>
+    <h4>Created new named node admin tuple: NodeAdminTuple(user=u&#39;peer0Signer&#39;, nodeName=u&#39;peer0&#39;, organization=u&#39;peerOrg0&#39;)</h4>
+</div><div class="scrollBox">
+    <code>
+-----BEGIN CERTIFICATE-----
+MIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw
+ZWVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIYYf1DdzjAwyMx5RnViuc6F
+KJUbEskgDiQRy3Kqy2ukhJ2L6R7R9+c71wVdMPRanMYleeFHycpSXPlNL1TXugqj
+UDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFM8CbxxVKwik2pJ4QYbE3I344slF
+MB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA
+MEUCIAIFuniU/TnQOxOMW6repg+iMFLKKx+xZtKSCdAZ8mU8AiEA5HzBWQLW3nNp
+YnhgK+tQs8t4lPyVAQlYIAyhTddeFEU=
+-----END CERTIFICATE-----
+
+    </code>
+</div><div id="peer1Signer">
+    <h4>Created new user peer1Signer with <a href="./dir-user-peer1signer-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIBXnwXyAGy+VekHPrtXBjWlIQjIj8kmuhfnHaWoHHaWRoAoGCCqGSM49
+AwEHoUQDQgAEI87aDDihDECmzn87Y74nkLFBj81XWT6+bMZIJBxTbB/ISU8NcDy4
+0oTEtIbXLdcNpGsvUF8/2UHViwgYsdwhpw==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div>
+    <h4>Created new named node admin tuple: NodeAdminTuple(user=u&#39;peer1Signer&#39;, nodeName=u&#39;peer1&#39;, organization=u&#39;peerOrg0&#39;)</h4>
+</div><div class="scrollBox">
+    <code>
+-----BEGIN CERTIFICATE-----
+MIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw
+ZWVyMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABCPO2gw4oQxAps5/O2O+J5Cx
+QY/NV1k+vmzGSCQcU2wfyElPDXA8uNKExLSG1y3XDaRrL1BfP9lB1YsIGLHcIaej
+UDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFBAZ9g06ru0jX14vXW8UGB0kU6sK
+MB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA
+MEUCIFdBz/h2oSxisb/icVSkGHYxJZEecpYSyHza9VprVg2+AiEAw1JuLiNeYHqz
+7GE4HdPzrdtqodYMHXWKjcwEu+FanWk=
+-----END CERTIFICATE-----
+
+    </code>
+</div><div id="peer2Signer">
+    <h4>Created new user peer2Signer with <a href="./dir-user-peer2signer-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIDmsVlw+uuqLS7lIVvQ1IFSGTGg2kRcM2GaLfFml9F2OoAoGCCqGSM49
+AwEHoUQDQgAE7o3jmsdiOMXT2N92CZUuhVha3TsPVz9lrMK5KP0wfFPJAEap2n0N
+L7nTNFAa/FpqyUhxQvJI/+amx+dHb+cVdw==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div>
+    <h4>Created new named node admin tuple: NodeAdminTuple(user=u&#39;peer2Signer&#39;, nodeName=u&#39;peer2&#39;, organization=u&#39;peerOrg1&#39;)</h4>
+</div><div class="scrollBox">
+    <code>
+-----BEGIN CERTIFICATE-----
+MIIBYjCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw
+ZWVyMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABO6N45rHYjjF09jfdgmVLoVY
+Wt07D1c/ZazCuSj9MHxTyQBGqdp9DS+50zRQGvxaaslIcULySP/mpsfnR2/nFXej
+UDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNUmx/Qpz/pzdd2gQXuX94k2Co0U
+MB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0cA
+MEQCIFGdVoZS5zhzWKFGa+2Yx/AY+7JuSptuT+HFpez6ArhtAiBh5G7u55tInl8t
+0Q6dpmSkOVqQQeCI1TTN1cr/KylR7w==
+-----END CERTIFICATE-----
+
+    </code>
+</div><div id="peer3Signer">
+    <h4>Created new user peer3Signer with <a href="./dir-user-peer3signer-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIAU1N9uejZyN+7gJFBuyna+N2b6j32OgA/pNsA3qoIQhoAoGCCqGSM49
+AwEHoUQDQgAEIjTlWnSn3V7vPIFiLYABgGGn5CXNVOW3hgMyvoopokLfswCpMbrP
+FtBT4SJ3KKsbUX5ZOO1GhfT8c9qIG24ubg==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div>
+    <h4>Created new named node admin tuple: NodeAdminTuple(user=u&#39;peer3Signer&#39;, nodeName=u&#39;peer3&#39;, organization=u&#39;peerOrg1&#39;)</h4>
+</div><div class="scrollBox">
+    <code>
+-----BEGIN CERTIFICATE-----
+MIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw
+ZWVyMzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABCI05Vp0p91e7zyBYi2AAYBh
+p+QlzVTlt4YDMr6KKaJC37MAqTG6zxbQU+EidyirG1F+WTjtRoX0/HPaiBtuLm6j
+UDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNjgwz6oTgkY1heqPcl1N0pqCdeV
+MB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0gA
+MEUCIQDOUTIjV5WQWZPUb1oeoWlckve3XtIAQrV8zTTBl9xkWQIgOcwjxjp3REQl
+OpNlpHT/wN3XcaNYBjZkLukB40AmWaU=
+-----END CERTIFICATE-----
+
+    </code>
+</div><div id="Step 13">
+    <h2>Step 13</h2>
+    <hr/>
+    <h3>And we compose &#34;docker-compose-next-4.yml&#34;</h3>
+</div><div class="scrollBox">
+    <code>
+COMPOSE_PROJECT_NAME=2bc85b60f71111e69bbe0800275fb08f CORE_PEER_NETWORKID=2bc85b60f71111e69bbe0800275fb08f ORDERER_GENERAL_GENESISFILE=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/genesis_file ORDERER_GENERAL_GENESISMETHOD=file docker-compose -f docker-compose-next-4.yml config --services
+    </code>
+</div><div class="scrollBox">
+    <code>
+COMPOSE_PROJECT_NAME=2bc85b60f71111e69bbe0800275fb08f CORE_PEER_NETWORKID=2bc85b60f71111e69bbe0800275fb08f ORDERER0_ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/orderer0/localMspConfig ORDERER_GENERAL_GENESISFILE=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/genesis_file ORDERER_GENERAL_GENESISMETHOD=file PEER0_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer0/localMspConfig PEER1_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer1/localMspConfig PEER2_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer2/localMspConfig PEER3_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer3/localMspConfig docker-compose -f docker-compose-next-4.yml up --force-recreate -d
+    </code>
+</div><div class="scrollBox">
+    <code>
+COMPOSE_PROJECT_NAME=2bc85b60f71111e69bbe0800275fb08f CORE_PEER_NETWORKID=2bc85b60f71111e69bbe0800275fb08f ORDERER0_ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/orderer0/localMspConfig ORDERER_GENERAL_GENESISFILE=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/genesis_file ORDERER_GENERAL_GENESISMETHOD=file PEER0_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer0/localMspConfig PEER1_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer1/localMspConfig PEER2_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer2/localMspConfig PEER3_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer3/localMspConfig docker-compose -f docker-compose-next-4.yml ps -q
+    </code>
+</div><div class="scrollBox">
+    <code>
+COMPOSE_PROJECT_NAME=2bc85b60f71111e69bbe0800275fb08f CORE_PEER_NETWORKID=2bc85b60f71111e69bbe0800275fb08f ORDERER0_ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/orderer0/localMspConfig ORDERER_GENERAL_GENESISFILE=/var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/genesis_file ORDERER_GENERAL_GENESISMETHOD=file PEER0_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer0/localMspConfig PEER1_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer1/localMspConfig PEER2_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer2/localMspConfig PEER3_CORE_PEER_MSPCFGPATH=/var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer3/localMspConfig docker-compose -f docker-compose-next-4.yml config
+    </code>
+</div><div>
+    <h4>Configuration</h4>
+</div><div class="scrollBox">
+    <code>
+networks: {}
+services:
+  orderer0:
+    command: orderer
+    environment:
+      ORDERER_GENERAL_GENESISFILE: /var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/genesis_file
+      ORDERER_GENERAL_GENESISMETHOD: file
+      ORDERER_GENERAL_LISTENADDRESS: 0.0.0.0
+      ORDERER_GENERAL_LOCALMSPDIR: /var/hyperledger/bddtests/volumes/orderer/2bc85b60f71111e69bbe0800275fb08f/orderer0/localMspConfig
+      ORDERER_GENERAL_LOGLEVEL: debug
+      ORDERER_GENESIS_ORDERERTYPE: solo
+    image: hyperledger/fabric-orderer
+    ports:
+    - &#39;7050&#39;
+    volumes:
+    - /opt/gopath/src/github.com/hyperledger/fabric/bddtests/volumes/orderer:/var/hyperledger/bddtests/volumes/orderer:rw
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
+  peer0:
+    command: sh -c &#34;sleep 2; peer node start&#34;
+    depends_on:
+    - orderer0
+    environment:
+      CORE_LOGGING_LEVEL: DEBUG
+      CORE_NEXT: &#39;true&#39;
+      CORE_PEER_ADDRESSAUTODETECT: &#39;true&#39;
+      CORE_PEER_COMMITTER_LEDGER_ORDERER: orderer0:7050
+      CORE_PEER_ENDORSER_ENABLED: &#39;true&#39;
+      CORE_PEER_ID: vp0
+      CORE_PEER_MSPCONFIGPATH: /var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer0/localMspConfig
+      CORE_PEER_NETWORKID: 2bc85b60f71111e69bbe0800275fb08f
+      CORE_PEER_PROFILE_ENABLED: &#39;true&#39;
+    image: hyperledger/fabric-peer
+    volumes:
+    - /opt/gopath/src/github.com/hyperledger/fabric/bddtests/volumes/peer:/var/hyperledger/bddtests/volumes/peer:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  peer1:
+    command: sh -c &#34;sleep 2; peer node start&#34;
+    depends_on:
+    - orderer0
+    - peer0
+    environment:
+      CORE_LOGGING_LEVEL: DEBUG
+      CORE_NEXT: &#39;true&#39;
+      CORE_PEER_ADDRESSAUTODETECT: &#39;true&#39;
+      CORE_PEER_COMMITTER_LEDGER_ORDERER: orderer0:7050
+      CORE_PEER_ENDORSER_ENABLED: &#39;true&#39;
+      CORE_PEER_GOSSIP_BOOTSTRAP: peer0:7051
+      CORE_PEER_ID: vp1
+      CORE_PEER_MSPCONFIGPATH: /var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer1/localMspConfig
+      CORE_PEER_NETWORKID: 2bc85b60f71111e69bbe0800275fb08f
+    image: hyperledger/fabric-peer
+    volumes:
+    - /opt/gopath/src/github.com/hyperledger/fabric/bddtests/volumes/peer:/var/hyperledger/bddtests/volumes/peer:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  peer2:
+    command: sh -c &#34;sleep 2; peer node start&#34;
+    depends_on:
+    - orderer0
+    - peer0
+    environment:
+      CORE_LOGGING_LEVEL: DEBUG
+      CORE_NEXT: &#39;true&#39;
+      CORE_PEER_ADDRESSAUTODETECT: &#39;true&#39;
+      CORE_PEER_COMMITTER_LEDGER_ORDERER: orderer0:7050
+      CORE_PEER_ENDORSER_ENABLED: &#39;true&#39;
+      CORE_PEER_GOSSIP_BOOTSTRAP: peer0:7051
+      CORE_PEER_ID: vp2
+      CORE_PEER_MSPCONFIGPATH: /var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer2/localMspConfig
+      CORE_PEER_NETWORKID: 2bc85b60f71111e69bbe0800275fb08f
+    image: hyperledger/fabric-peer
+    volumes:
+    - /opt/gopath/src/github.com/hyperledger/fabric/bddtests/volumes/peer:/var/hyperledger/bddtests/volumes/peer:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+  peer3:
+    command: sh -c &#34;sleep 2; peer node start&#34;
+    depends_on:
+    - orderer0
+    - peer0
+    environment:
+      CORE_LOGGING_LEVEL: DEBUG
+      CORE_NEXT: &#39;true&#39;
+      CORE_PEER_ADDRESSAUTODETECT: &#39;true&#39;
+      CORE_PEER_COMMITTER_LEDGER_ORDERER: orderer0:7050
+      CORE_PEER_ENDORSER_ENABLED: &#39;true&#39;
+      CORE_PEER_GOSSIP_BOOTSTRAP: peer0:7051
+      CORE_PEER_ID: vp3
+      CORE_PEER_MSPCONFIGPATH: /var/hyperledger/bddtests/volumes/peer/2bc85b60f71111e69bbe0800275fb08f/peer3/localMspConfig
+      CORE_PEER_NETWORKID: 2bc85b60f71111e69bbe0800275fb08f
+    image: hyperledger/fabric-peer
+    volumes:
+    - /opt/gopath/src/github.com/hyperledger/fabric/bddtests/volumes/peer:/var/hyperledger/bddtests/volumes/peer:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+version: &#39;2.0&#39;
+volumes: {}
+
+
+    </code>
+</div><div>
+    <h4>Network Graph</h4>
+</div><style>
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+</style>
+<div>
+<svg width="860" height="500"></svg>
+</div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+var svg = d3.select("svg"),
+    width = +svg.attr("width"),
+    height = +svg.attr("height");
+
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+var simulation = d3.forceSimulation()
+    .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(function(d) {
+        if (d.source.id.indexOf("peer") === 0 && d.target.id.indexOf("orderer") === 0) {
+			return 200} else return 50}))
+    .force("charge", d3.forceManyBody().strength(function(d) {
+        if (d.type==="org") {
+			return -120} else return -30}))
+    .force("center", d3.forceCenter(width / 2, height / 2));
+
+d3.json("network.json", function(error, graph) {
+  if (error) throw error;
+
+  var link = svg.append("g")
+      .attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter().append("line")
+      .attr("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+  var node = svg.append("g")
+      .attr("class", "nodes")
+    .selectAll("circle")
+    .data(graph.nodes)
+    .enter().append("circle")
+      .attr("r", 10)
+      .attr("fill", function(d) { return color(d.group); })
+      .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+  node.append("title")
+      .text(function(d) { return d.id; });
+
+  simulation
+      .nodes(graph.nodes)
+      .on("tick", ticked);
+
+  simulation.force("link")
+      .links(graph.links);
+
+  function ticked() {
+    link
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+  }
+});
+
+function dragstarted(d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(d) {
+  d.fx = d3.event.x;
+  d.fy = d3.event.y;
+}
+
+function dragended(d) {
+  if (!d3.event.active) simulation.alphaTarget(0);
+  d.fx = null;
+  d.fy = null;
+}
+
+</script><div id="Step 14">
+    <h2>Step 14</h2>
+    <hr/>
+    <h3>And the ordererBootstrapAdmin runs the channel template tool to create the orderer configuration template &#34;template1&#34; for application developers using orderer &#34;orderer0&#34;</h3>
+</div><div id="Step 15">
+    <h2>Step 15</h2>
+    <hr/>
+    <h3>And the ordererBootstrapAdmin distributes orderer configuration template &#34;template1&#34; and chain creation policy name &#34;chainCreatePolicy1&#34;</h3>
+</div><div id="Step 16">
+    <h2>Step 16</h2>
+    <hr/>
+    <h3>And the following application developers are defined for peer organizations and each saves their cert as alias</h3>
+    <table>
+        <tr>
+            <th>Developer</th>
+            <th>ChainCreationPolicyName</th>
+            <th>Organization</th>
+            <th>AliasSavedUnder</th>
+        </tr>
+        <tr>
+            <td>dev0Org0</td>
+            <td>chainCreatePolicy1</td>
+            <td>peerOrg0</td>
+            <td>dev0Org0App1</td>
+        </tr>
+    </table>
+</div><div id="dev0Org0">
+    <h4>Created new user dev0Org0 with <a href="./dir-user-dev0org0-privatekey.pem">private key</a></h4>
+    <code>-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIKtT9VRFsppqct3llvwEmEu59o3MuvjVAro0NZIZ4BFooAoGCCqGSM49
+AwEHoUQDQgAEhBDT7y+khutXkKTBU6x6NJ3hZZK5NDW2UBBIQjc9wncxP5paZvjB
+xPOLw/Db7D9MFjX/bn0YDOHLBSv0DZ5taQ==
+-----END EC PRIVATE KEY-----
+</code>
+</div><div>
+    <h4>Created new named node admin tuple: NodeAdminTuple(user=u&#39;dev0Org0&#39;, nodeName=u&#39;chainCreatePolicy1&#39;, organization=u&#39;peerOrg0&#39;)</h4>
+</div><div class="scrollBox">
+    <code>
+-----BEGIN CERTIFICATE-----
+MIIBcDCCARagAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y
+ZzAwHhcNMTcwMjIwMDIwNjI0WhcNMTgwMjIwMDIwNjI0WjAdMRswGQYDVQQDDBJj
+aGFpbkNyZWF0ZVBvbGljeTEwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASEENPv
+L6SG61eQpMFTrHo0neFlkrk0NbZQEEhCNz3CdzE/mlpm+MHE84vD8NvsP0wWNf9u
+fRgM4csFK/QNnm1po1AwTjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBR58x3ZDB4l
+yKuRfxxoSPQOtc/JLzAfBgNVHSMEGDAWgBS9VKjQ005s8CPu6n0ykQGFh2Y3jTAK
+BggqhkjOPQQDAgNIADBFAiEA0Ng1WuFnaqqKSOJh14p8aRQ4yJPumtr+efb9RtCK
+yDICIA4G3DLB1l5o9mHchTzO73Wg20flEguSEqa3wTp0hpxG
+-----END CERTIFICATE-----
+
+    </code>
+</div><div id="dev0Org0-dev0Org0App1">
+    <h4>User dev0Org0 setting tag key dev0Org0App1 to value</h4>
+</div><div class="scrollBox">
+    <code>
+NodeAdminTuple(user=u&#39;dev0Org0&#39;, nodeName=u&#39;chainCreatePolicy1&#39;, organization=u&#39;peerOrg0&#39;)
+    </code>
+</div><div id="Step 17">
+    <h2>Step 17</h2>
+    <hr/>
+    <h3>And the user &#34;dev0Org0&#34; creates a peer template &#34;template1&#34; with chaincode deployment policy using chain creation policy name &#34;chainCreatePolicy1&#34; and peer organizations</h3>
+    <table>
+        <tr>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peerOrg1</td>
+        </tr>
+    </table>
+</div><div id="dev0Org0-template1">
+    <h4>User dev0Org0 setting tag key template1 to value</h4>
+</div><div class="scrollBox">
+    <code>
+[&lt;steps.bootstrap_util.Organization instance at 0x7f66819eea70&gt;, &lt;steps.bootstrap_util.Organization instance at 0x7f66819eed40&gt;]
+    </code>
+</div><div id="Step 18">
+    <h2>Step 18</h2>
+    <hr/>
+    <h3>And the user &#34;dev0Org0&#34; creates an peer anchor set &#34;anchors1&#34; for channel &#34;com.acme.blockchain.jdoe.Channel1&#34; for orgs</h3>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Peer</th>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>peer0Signer</td>
+            <td>peer0</td>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peer2Signer</td>
+            <td>peer2</td>
+            <td>peerOrg1</td>
+        </tr>
+    </table>
+</div><div id="dev0Org0-anchors1">
+    <h4>User dev0Org0 setting tag key anchors1 to value</h4>
+</div><div>
+    <a href="./dev0org0-anchors1-0000.protobuf" title="dev0org0-anchors1-0000.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+groups {
+  key: &#34;Application&#34;
+  value {
+    groups {
+      key: &#34;peerOrg0&#34;
+      value {
+        values {
+          key: &#34;AnchorPeers&#34;
+          value {
+            value: &#34;\n\253\004\n\005peer0\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIYYf1DdzjAwyMx5RnViuc6F\nKJUbEskgDiQRy3Kqy2ukhJ2L6R7R9+c71wVdMPRanMYleeFHycpSXPlNL1TXugqj\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFM8CbxxVKwik2pJ4QYbE3I344slF\nMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA\nMEUCIAIFuniU/TnQOxOMW6repg+iMFLKKx+xZtKSCdAZ8mU8AiEA5HzBWQLW3nNp\nYnhgK+tQs8t4lPyVAQlYIAyhTddeFEU=\n-----END CERTIFICATE-----\n&#34;
+          }
+        }
+      }
+    }
+    groups {
+      key: &#34;peerOrg1&#34;
+      value {
+        values {
+          key: &#34;AnchorPeers&#34;
+          value {
+            value: &#34;\n\253\004\n\005peer2\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYjCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABO6N45rHYjjF09jfdgmVLoVY\nWt07D1c/ZazCuSj9MHxTyQBGqdp9DS+50zRQGvxaaslIcULySP/mpsfnR2/nFXej\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNUmx/Qpz/pzdd2gQXuX94k2Co0U\nMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0cA\nMEQCIFGdVoZS5zhzWKFGa+2Yx/AY+7JuSptuT+HFpez6ArhtAiBh5G7u55tInl8t\n0Q6dpmSkOVqQQeCI1TTN1cr/KylR7w==\n-----END CERTIFICATE-----\n&#34;
+          }
+        }
+      }
+    }
+  }
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.configtx_pb2 import ConfigGroup
+configGroup = ConfigGroup()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/dev0org0-anchors1-0000.protobuf') as f:
+    data = f.read()
+
+configGroup.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 19">
+    <h2>Step 19</h2>
+    <hr/>
+    <h3>And the user &#34;dev0Org0&#34; creates a ConfigUpdateEnvelope &#34;createChannelConfigUpdate1&#34;</h3>
+    <table>
+        <tr>
+            <th>ChannelID</th>
+            <th>Template</th>
+            <th>Chain Creation Policy Name</th>
+            <th>Anchors</th>
+        </tr>
+        <tr>
+            <td>com.acme.blockchain.jdoe.Channel1</td>
+            <td>template1</td>
+            <td>chainCreatePolicy1</td>
+            <td>anchors1</td>
+        </tr>
+    </table>
+</div><div id="dev0Org0-createChannelConfigUpdate1">
+    <h4>User dev0Org0 setting tag key createChannelConfigUpdate1 to value</h4>
+</div><div class="scrollBox">
+    <code>
+channelId = com.acme.blockchain.jdoe.Channel1
+channelCreationPolicyName=chainCreatePolicy1
+configUpdateEnvelope=config_update: &#34;\n%\010\002\&#34;!com.acme.blockchain.jdoe.Channel1\032\302\035\022\242\033\n\013Application\022\222\033\022\306\r\n\010peerOrg0\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer0\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIYYf1DdzjAwyMx5RnViuc6F\nKJUbEskgDiQRy3Kqy2ukhJ2L6R7R9+c71wVdMPRanMYleeFHycpSXPlNL1TXugqj\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFM8CbxxVKwik2pJ4QYbE3I344slF\nMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA\nMEUCIAIFuniU/TnQOxOMW6repg+iMFLKKx+xZtKSCdAZ8mU8AiEA5HzBWQLW3nNp\nYnhgK+tQs8t4lPyVAQlYIAyhTddeFEU=\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg0\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\022\306\r\n\010peerOrg1\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer2\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYjCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABO6N45rHYjjF09jfdgmVLoVY\nWt07D1c/ZazCuSj9MHxTyQBGqdp9DS+50zRQGvxaaslIcULySP/mpsfnR2/nFXej\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNUmx/Qpz/pzdd2gQXuX94k2Co0U\nMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0cA\nMEQCIFGdVoZS5zhzWKFGa+2Yx/AY+7JuSptuT+HFpez6ArhtAiBh5G7u55tInl8t\n0Q6dpmSkOVqQQeCI1TTN1cr/KylR7w==\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg1\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\022\333\001\n\007Orderer\022\317\001\032\032\n\tBatchSize\022\r\022\013\010\n\020\200\302\327/\030\200\200 \032)\n\022IngressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\027\n\014BatchTimeout\022\007\022\005\n\00310s\032(\n\021EgressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\031\n\rConsensusType\022\010\022\006\n\004solo\032(\n\016CreationPolicy\022\026\022\024\n\022chainCreatePolicy1\032\036\n\020HashingAlgorithm\022\n\022\010\n\006SHA256\&#34;\035\n\017AcceptAllPolicy\022\n\022\010\010\001\022\004\022\002\022\000&#34;
+
+
+    </code>
+</div><div id="Step 20">
+    <h2>Step 20</h2>
+    <hr/>
+    <h3>And the user &#34;dev0Org0&#34; collects signatures for ConfigUpdateEnvelope &#34;createChannelConfigUpdate1&#34; from peer orgs</h3>
+    <table>
+        <tr>
+            <th>Organization</th>
+        </tr>
+        <tr>
+            <td>peerOrg0</td>
+        </tr>
+        <tr>
+            <td>peerOrg1</td>
+        </tr>
+    </table>
+</div><div id="Step 21">
+    <h2>Step 21</h2>
+    <hr/>
+    <h3>And the user &#34;dev0Org0&#34; creates a ConfigUpdate Tx &#34;configUpdateTx1&#34; using signed ConfigUpdateEnvelope &#34;createChannelConfigUpdate1&#34;</h3>
+</div><div id="dev0Org0-configUpdateTx1">
+    <h4>User dev0Org0 setting tag key configUpdateTx1 to value</h4>
+</div><div>
+    <a href="./dev0org0-configupdatetx1.protobuf" title="dev0org0-configupdatetx1.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+payload: &#34;\nM\n/\010\002\020\001\032\006\010\233\236\251\305\005\&#34;!com.acme.blockchain.jdoe.Channel1\022\032\022\030\343\013\0130Q\310j\337\273~\221#\230f?\004\214\226x^\321s\206\304\022\246%\n\354\035\n%\010\002\&#34;!com.acme.blockchain.jdoe.Channel1\032\302\035\022\242\033\n\013Application\022\222\033\022\306\r\n\010peerOrg0\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer0\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIYYf1DdzjAwyMx5RnViuc6F\nKJUbEskgDiQRy3Kqy2ukhJ2L6R7R9+c71wVdMPRanMYleeFHycpSXPlNL1TXugqj\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFM8CbxxVKwik2pJ4QYbE3I344slF\nMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA\nMEUCIAIFuniU/TnQOxOMW6repg+iMFLKKx+xZtKSCdAZ8mU8AiEA5HzBWQLW3nNp\nYnhgK+tQs8t4lPyVAQlYIAyhTddeFEU=\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg0\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\022\306\r\n\010peerOrg1\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer2\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYjCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABO6N45rHYjjF09jfdgmVLoVY\nWt07D1c/ZazCuSj9MHxTyQBGqdp9DS+50zRQGvxaaslIcULySP/mpsfnR2/nFXej\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNUmx/Qpz/pzdd2gQXuX94k2Co0U\nMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0cA\nMEQCIFGdVoZS5zhzWKFGa+2Yx/AY+7JuSptuT+HFpez6ArhtAiBh5G7u55tInl8t\n0Q6dpmSkOVqQQeCI1TTN1cr/KylR7w==\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg1\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\022\333\001\n\007Orderer\022\317\001\032\032\n\tBatchSize\022\r\022\013\010\n\020\200\302\327/\030\200\200 \032)\n\022IngressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\027\n\014BatchTimeout\022\007\022\005\n\00310s\032(\n\021EgressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\031\n\rConsensusType\022\010\022\006\n\004solo\032(\n\016CreationPolicy\022\026\022\024\n\022chainCreatePolicy1\032\036\n\020HashingAlgorithm\022\n\022\010\n\006SHA256\&#34;\035\n\017AcceptAllPolicy\022\n\022\010\010\001\022\004\022\002\022\000\022\330\003\n\215\003\n\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg00\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg00Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\200\231\375%\201^+\267\316\037\005\031BL\255\361\377?\314\226\224\322Y\325v\216\204SR\302Q\250|=\312g\355\217\245,5i&lt;\256:2\252:(P\003\340\257b\315\242\364zF~\365\351\336\212\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\037\006\003U\035#\004\0300\026\200\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\n\006\010*\206H\316=\004\003\002\003H\0000E\002!\000\354\312\237Z\200\201\346\272\226+%\200\n\333\327\367\333\227%\323$b\271Z\312\216\217\032E\335\227]\002 Gj\227\273\325;\310\351e\227\274)\020|\304\026#e@!p\363\274\0342\345\330\223\263\265\276\242\022\030/\337\214\227\343\261;@\244GCYav\007\\\335\&#34;c\264j^\&#34;\034\022F0D\002 :)\014\032\201\360\347X\353\337\031\226v\340$\277\024X\321^X\366\030j8\327\264\265\006&lt;\177L\002 \035\246\212\360w;\000\272]\035\035hb6\0377\204\330;d\272b,\245\276\\\2222\340wA\374\022\331\003\n\215\003\n\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg10\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg10Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\\M}\326\020\250\262qu\035\305\276\346\266\215\265`U\370\363\311l\376\220\323\014|\007\365w\034\315\010\t \374\313K\311\236b\345G\311$\331`\346\r\014\303R{\277\255KkyM\374\332\006|.\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\037\006\003U\035#\004\0300\026\200\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\n\006\010*\206H\316=\004\003\002\003H\0000E\002 1O\002\033\207\303\305\254\373\207b\302[\021\270&gt;\311\212P\237A\036\325\005\006\036\307!\336\\\267R\002!\000\372\230&gt;Z\&#39;XIB\214\t)\236\372\345}\&#39;r@pN\007zc\036\331o\27797\213=\262\022\030\262\304\004\215\252\204\226\224\004\351W\377Q\226&amp;\252+:Z\006\340\212-\303\022G0E\002!\000\204!:[\313\177#Zg\304\2728+\320\2422\355\237\227\330$\375\233\021\305\277P\237k\237y\261\002 /\346\337{\360\224\336\372]\336\237\246\332\203pq\266\2163X\273\335\213qq\232t1\243\257$^&#34;
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.common_pb2 import Envelope
+envelope = Envelope()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/dev0org0-configupdatetx1.protobuf') as f:
+    data = f.read()
+
+envelope.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 22">
+    <h2>Step 22</h2>
+    <hr/>
+    <h3>And the user &#34;dev0Org0&#34; broadcasts ConfigUpdate Tx &#34;configUpdateTx1&#34; to orderer &#34;orderer0&#34; to create channel &#34;com.acme.blockchain.jdoe.Channel1&#34;</h3>
+</div><div id="Step 23">
+    <h2>Step 23</h2>
+    <hr/>
+    <h3>And I wait &#34;2&#34; seconds</h3>
+</div><div id="Step 24">
+    <h2>Step 24</h2>
+    <hr/>
+    <h3>When user &#34;dev0Org0&#34; connects to deliver function on orderer &#34;orderer0&#34;</h3>
+</div><div id="Step 25">
+    <h2>Step 25</h2>
+    <hr/>
+    <h3>And user &#34;dev0Org0&#34; sends deliver a seek request on orderer &#34;orderer0&#34; with properties</h3>
+    <table>
+        <tr>
+            <th>ChainId</th>
+            <th>Start</th>
+            <th>End</th>
+        </tr>
+        <tr>
+            <td>com.acme.blockchain.jdoe.Channel1</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+    </table>
+</div><div id="Step 26">
+    <h2>Step 26</h2>
+    <hr/>
+    <h3>Then user &#34;dev0Org0&#34; should get a delivery &#34;genesisBlockForMyNewChannel&#34; from &#34;orderer0&#34; of &#34;1&#34; blocks with &#34;1&#34; messages within &#34;1&#34; seconds</h3>
+</div><div id="dev0Org0-genesisBlockForMyNewChannel">
+    <h4>User dev0Org0 setting tag key genesisBlockForMyNewChannel to value</h4>
+</div><div>
+    <a href="./dev0org0-genesisblockformynewchannel-0000.protobuf" title="dev0org0-genesisblockformynewchannel-0000.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+header {
+  data_hash: &#34; \251\\\002p\317Y\240uN\246y\026\261A\244\340!\225W\215\371\367@\023\331\n~f\&#34;\004\305&#34;
+}
+data {
+  data: &#34;\n\326H\n\343\004\n%\010\001\&#34;!com.acme.blockchain.jdoe.Channel1\022\271\004\n\234\004\n\007DEFAULT\022\220\004-----BEGIN -----\nMIIBaDCCAQ+gAwIBAwICA+gwCgYIKoZIzj0EAwIwFjEUMBIGA1UEAwwLb3JkZXJl\nck9yZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQD\nDAhvcmRlcmVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABBdBFmDk+3UZHxgc\n5ybrEdVqokZERjxHtSu70VhV8eFQ2Mhs/WLQtie5gS3OvJujDgEzHzJZ3FBfF8o+\n5CBbq3yjUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFEu1v9NmfpTKw2F13XIr\nv1IZM6DMMB8GA1UdIwQYMBaAFPs4royAdAdiGzVRGciJv0XyyRHuMAoGCCqGSM49\nBAMCA0cAMEQCIHJNleUpa4iXwuX4Ww9hX1TQNP/TZLDI2i6Ojsn7HwiMAiB7wEPl\n5C+rXCz1c7aqJix9M/tBh2M/tyBd+Q3jAjisHw==\n-----END -----\n\022\030:\2178\233^38&lt;ar@\327\2332\030\&#34;\250\003\013g\274\266\250\314\022\355C\n\354\035\n%\010\001\&#34;!com.acme.blockchain.jdoe.Channel1\022\302\035\022\333\001\n\007Orderer\022\317\001\032(\n\016CreationPolicy\022\026\022\024\n\022chainCreatePolicy1\032\032\n\tBatchSize\022\r\022\013\010\n\020\200\302\327/\030\200\200 \032)\n\022IngressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\027\n\014BatchTimeout\022\007\022\005\n\00310s\032(\n\021EgressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\031\n\rConsensusType\022\010\022\006\n\004solo\022\242\033\n\013Application\022\222\033\022\306\r\n\010peerOrg0\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer0\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIYYf1DdzjAwyMx5RnViuc6F\nKJUbEskgDiQRy3Kqy2ukhJ2L6R7R9+c71wVdMPRanMYleeFHycpSXPlNL1TXugqj\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFM8CbxxVKwik2pJ4QYbE3I344slF\nMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA\nMEUCIAIFuniU/TnQOxOMW6repg+iMFLKKx+xZtKSCdAZ8mU8AiEA5HzBWQLW3nNp\nYnhgK+tQs8t4lPyVAQlYIAyhTddeFEU=\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg0\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\022\306\r\n\010peerOrg1\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer2\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYjCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABO6N45rHYjjF09jfdgmVLoVY\nWt07D1c/ZazCuSj9MHxTyQBGqdp9DS+50zRQGvxaaslIcULySP/mpsfnR2/nFXej\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNUmx/Qpz/pzdd2gQXuX94k2Co0U\nMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0cA\nMEQCIFGdVoZS5zhzWKFGa+2Yx/AY+7JuSptuT+HFpez6ArhtAiBh5G7u55tInl8t\n0Q6dpmSkOVqQQeCI1TTN1cr/KylR7w==\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg1\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\032\036\n\020HashingAlgorithm\022\n\022\010\n\006SHA256\&#34;\035\n\017AcceptAllPolicy\022\n\022\010\010\001\022\004\022\002\022\000\022\373%\n\370%\nM\n/\010\002\020\001\032\006\010\233\236\251\305\005\&#34;!com.acme.blockchain.jdoe.Channel1\022\032\022\030\343\013\0130Q\310j\337\273~\221#\230f?\004\214\226x^\321s\206\304\022\246%\n\354\035\n%\010\002\&#34;!com.acme.blockchain.jdoe.Channel1\032\302\035\022\242\033\n\013Application\022\222\033\022\306\r\n\010peerOrg0\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer0\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYzCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABIYYf1DdzjAwyMx5RnViuc6F\nKJUbEskgDiQRy3Kqy2ukhJ2L6R7R9+c71wVdMPRanMYleeFHycpSXPlNL1TXugqj\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFM8CbxxVKwik2pJ4QYbE3I344slF\nMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqGSM49BAMCA0gA\nMEUCIAIFuniU/TnQOxOMW6repg+iMFLKKx+xZtKSCdAZ8mU8AiEA5HzBWQLW3nNp\nYnhgK+tQs8t4lPyVAQlYIAyhTddeFEU=\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg0\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzAwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABICZ/SWBXiu3zh8FGUJM\nrfH/P8yWlNJZ1XaOhFNSwlGofD3KZ+2PpSw1aTyuOjKqOihQA+CvYs2i9HpGfvXp\n3oqjVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFL1UqNDTTmzwI+7q\nfTKRAYWHZjeNMB8GA1UdIwQYMBaAFL1UqNDTTmzwI+7qfTKRAYWHZjeNMAoGCCqG\nSM49BAMCA0gAMEUCIQDsyp9agIHmupYrJYAK29f325cl0yRiuVrKjo8aRd2XXQIg\nR2qXu9U7yOlll7wpEHzEFiNlQCFw87wcMuXYk7O1vqI=\n-----END CERTIFICATE-----\n\022\306\r\n\010peerOrg1\022\271\r\032\301\004\n\013AnchorPeers\022\261\004\022\256\004\n\253\004\n\005peer2\020\353+\032\236\004-----BEGIN CERTIFICATE-----\nMIIBYjCCAQmgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIxWhcNMTgwMjIwMDIwNjIxWjAQMQ4wDAYDVQQDDAVw\nZWVyMjBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABO6N45rHYjjF09jfdgmVLoVY\nWt07D1c/ZazCuSj9MHxTyQBGqdp9DS+50zRQGvxaaslIcULySP/mpsfnR2/nFXej\nUDBOMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFNUmx/Qpz/pzdd2gQXuX94k2Co0U\nMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqGSM49BAMCA0cA\nMEQCIFGdVoZS5zhzWKFGa+2Yx/AY+7JuSptuT+HFpez6ArhtAiBh5G7u55tInl8t\n0Q6dpmSkOVqQQeCI1TTN1cr/KylR7w==\n-----END CERTIFICATE-----\n\032\362\010\n\003MSP\022\352\010\022\347\010\022\344\010\n\010peerOrg1\022\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\&#34;\252\004-----BEGIN CERTIFICATE-----\nMIIBbDCCARKgAwIBAwICA+gwCgYIKoZIzj0EAwIwEzERMA8GA1UEAwwIcGVlck9y\nZzEwHhcNMTcwMjIwMDIwNjIwWhcNMTgwMjIwMDIwNjIwWjATMREwDwYDVQQDDAhw\nZWVyT3JnMTBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABFxNfdYQqLJxdR3Fvua2\njbVgVfjzyWz+kNMMfAf1dxzNCAkg/MtLyZ5i5UfJJNlg5g0Mw1J7v61La3lN/NoG\nfC6jVjBUMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLWgI+3DIjnENgSb\nrMG2o2RDurwpMB8GA1UdIwQYMBaAFLWgI+3DIjnENgSbrMG2o2RDurwpMAoGCCqG\nSM49BAMCA0gAMEUCIDFPAhuHw8Ws+4diwlsRuD7JilCfQR7VBQYexyHeXLdSAiEA\n+pg+WidYSUKMCSme+uV9J3JAcE4HemMe2W+/OTeLPbI=\n-----END CERTIFICATE-----\n\022\333\001\n\007Orderer\022\317\001\032\032\n\tBatchSize\022\r\022\013\010\n\020\200\302\327/\030\200\200 \032)\n\022IngressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\027\n\014BatchTimeout\022\007\022\005\n\00310s\032(\n\021EgressPolicyNames\022\023\022\021\n\017AcceptAllPolicy\032\031\n\rConsensusType\022\010\022\006\n\004solo\032(\n\016CreationPolicy\022\026\022\024\n\022chainCreatePolicy1\032\036\n\020HashingAlgorithm\022\n\022\010\n\006SHA256\&#34;\035\n\017AcceptAllPolicy\022\n\022\010\010\001\022\004\022\002\022\000\022\330\003\n\215\003\n\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg00\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg00Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\200\231\375%\201^+\267\316\037\005\031BL\255\361\377?\314\226\224\322Y\325v\216\204SR\302Q\250|=\312g\355\217\245,5i&lt;\256:2\252:(P\003\340\257b\315\242\364zF~\365\351\336\212\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\037\006\003U\035#\004\0300\026\200\024\275T\250\320\323Nl\360#\356\352}2\221\001\205\207f7\2150\n\006\010*\206H\316=\004\003\002\003H\0000E\002!\000\354\312\237Z\200\201\346\272\226+%\200\n\333\327\367\333\227%\323$b\271Z\312\216\217\032E\335\227]\002 Gj\227\273\325;\310\351e\227\274)\020|\304\026#e@!p\363\274\0342\345\330\223\263\265\276\242\022\030/\337\214\227\343\261;@\244GCYav\007\\\335\&#34;c\264j^\&#34;\034\022F0D\002 :)\014\032\201\360\347X\353\337\031\226v\340$\277\024X\321^X\366\030j8\327\264\265\006&lt;\177L\002 \035\246\212\360w;\000\272]\035\035hb6\0377\204\330;d\272b,\245\276\\\2222\340wA\374\022\331\003\n\215\003\n\360\0020\202\001l0\202\001\022\240\003\002\001\003\002\002\003\3500\n\006\010*\206H\316=\004\003\0020\0231\0210\017\006\003U\004\003\014\010peerOrg10\036\027\r170220020620Z\027\r180220020620Z0\0231\0210\017\006\003U\004\003\014\010peerOrg10Y0\023\006\007*\206H\316=\002\001\006\010*\206H\316=\003\001\007\003B\000\004\\M}\326\020\250\262qu\035\305\276\346\266\215\265`U\370\363\311l\376\220\323\014|\007\365w\034\315\010\t \374\313K\311\236b\345G\311$\331`\346\r\014\303R{\277\255KkyM\374\332\006|.\243V0T0\022\006\003U\035\023\001\001\377\004\0100\006\001\001\377\002\001\0000\035\006\003U\035\016\004\026\004\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\037\006\003U\035#\004\0300\026\200\024\265\240#\355\303\&#34;9\3046\004\233\254\301\266\243dC\272\274)0\n\006\010*\206H\316=\004\003\002\003H\0000E\002 1O\002\033\207\303\305\254\373\207b\302[\021\270&gt;\311\212P\237A\036\325\005\006\036\307!\336\\\267R\002!\000\372\230&gt;Z\&#39;XIB\214\t)\236\372\345}\&#39;r@pN\007zc\036\331o\27797\213=\262\022\030\262\304\004\215\252\204\226\224\004\351W\377Q\226&amp;\252+:Z\006\340\212-\303\022G0E\002!\000\204!:[\313\177#Zg\304\2728+\320\2422\355\237\227\330$\375\233\021\305\277P\237k\237y\261\002 /\346\337{\360\224\336\372]\336\237\246\332\203pq\266\2163X\273\335\213qq\232t1\243\257$^\022F0D\002 \016\005\243O\311Ba\276\013\005\2777\354N\253\342q\030-\376\270_+]M\006`\226g}-\027\002 &gt;OX\027\350\221\021;\326\035\224p\270.\206/#_\356\&#34;N\211\304X\362\352\256e\235\305\275\206&#34;
+}
+metadata {
+  metadata: &#34;&#34;
+  metadata: &#34;&#34;
+  metadata: &#34;&#34;
+  metadata: &#34;&#34;
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from common.common_pb2 import Block
+block = Block()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/dev0org0-genesisblockformynewchannel-0000.protobuf') as f:
+    data = f.read()
+
+block.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 27">
+    <h2>Step 27</h2>
+    <hr/>
+    <h3>When user &#34;dev0Org0&#34; using cert alias &#34;dev0Org0App1&#34; requests to join channel using genesis block &#34;genesisBlockForMyNewChannel&#34; on peers with result &#34;joinChannelResult&#34;</h3>
+    <table>
+        <tr>
+            <th>Peer</th>
+        </tr>
+        <tr>
+            <td>peer0</td>
+        </tr>
+        <tr>
+            <td>peer2</td>
+        </tr>
+    </table>
+</div><div id="dev0Org0-joinChannelResult">
+    <h4>User dev0Org0 setting tag key joinChannelResult to value</h4>
+</div><div class="scrollBox">
+    <code>
+{u&#39;peer0&#39;: response {
+  status: 200
+}
+, u&#39;peer2&#39;: response {
+  status: 200
+}
+}
+    </code>
+</div><div id="Step 28">
+    <h2>Step 28</h2>
+    <hr/>
+    <h3>Then user &#34;dev0Org0&#34; expects result code for &#34;joinChannelResult&#34; of &#34;200&#34; from peers</h3>
+    <table>
+        <tr>
+            <th>Peer</th>
+        </tr>
+        <tr>
+            <td>peer0</td>
+        </tr>
+        <tr>
+            <td>peer2</td>
+        </tr>
+    </table>
+</div><div id="Step 29">
+    <h2>Step 29</h2>
+    <hr/>
+    <h3>When user &#34;dev0Org0&#34; creates a chaincode spec &#34;cc_spec&#34; with name &#34;example02&#34; of type &#34;GOLANG&#34; for chaincode &#34;github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02&#34; with args</h3>
+    <table>
+        <tr>
+            <th>funcName</th>
+            <th>arg1</th>
+            <th>arg2</th>
+            <th>arg3</th>
+            <th>arg4</th>
+        </tr>
+        <tr>
+            <td>init</td>
+            <td>a</td>
+            <td>100</td>
+            <td>b</td>
+            <td>200</td>
+        </tr>
+    </table>
+</div><div id="dev0Org0-cc_spec">
+    <h4>User dev0Org0 setting tag key cc_spec to value</h4>
+</div><div>
+    <a href="./dev0org0-cc-spec.protobuf" title="dev0org0-cc-spec.protobuf">Protobuf message in binary form</a>
+    <div class="scrollBox">
+        <code>
+type: GOLANG
+chaincode_id {
+  path: &#34;github.com/hyperledger/fabric/examples/chaincode/go/chaincode_example02&#34;
+  name: &#34;example02&#34;
+  version: &#34;test&#34;
+}
+input {
+  args: &#34;init&#34;
+  args: &#34;a&#34;
+  args: &#34;100&#34;
+  args: &#34;b&#34;
+  args: &#34;200&#34;
+}
+
+        </code>
+    </div>
+<div>
+    <div class="scrollBox">
+<code>
+from peer.chaincode_pb2 import ChaincodeSpec
+chaincodeSpec = ChaincodeSpec()
+data = None
+with open('tmp/2bc85b60f71111e69bbe0800275fb08f/dev0org0-cc-spec.protobuf') as f:
+    data = f.read()
+
+chaincodeSpec.ParseFromString(data)
+
+</code>
+    </div>
+</div></div><div id="Step 30">
+    <h2>Step 30</h2>
+    <hr/>
+    <h3>And user &#34;dev0Org0&#34; using cert alias &#34;dev0Org0App1&#34; creates a deployment proposal &#34;proposal1&#34; for channel &#34;com.acme.blockchain.jdoe.Channel1&#34; using chaincode spec &#34;cc_spec&#34;</h3>
+</div>
+
+<div id="footer">
+    &copy; Copyright IBM Corp. 2017 All Rights Reserved.
+</div>
+</body>
+</html>
